@@ -1,0 +1,127 @@
+
+<html>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+
+<div id="check">Total Supply of Coins : 100</div>
+
+<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="chart"></canvas>
+</div>
+<script>
+let totalCoinA = 100; 
+let totalCoinB = null; 
+let price = null;
+let init = 0;
+
+let months = [ "January", "February", "March", "April", "May", "June",
+"July", "August", "September", "October", "November", "December" ];
+
+random = () => Math.floor((Math.random() * totalCoinA) + 1);
+
+//fs.writeFileSync('/tmp/test-sync', data);
+
+bought = [];
+
+execMe = () => {
+    doRand = random();
+    totalCoinA = totalCoinA - doRand;
+    bought.push(random());
+}
+initBuying = async () => {
+    months.forEach(element => {
+        if(totalCoinA != 0 && totalCoinA != -1){
+            doRand = random();
+            totalCoinA = totalCoinA - doRand;
+            if (!totalCoinA != 0 && !totalCoinA != -1){
+                bought.push(0);
+            } else {
+                bought.push(doRand);
+            }
+        } else {
+            bought.push(0);
+        }
+    });
+    
+
+}
+let left = 100;
+price = [];
+evalutePrice = async () => {
+    bought.forEach(element => {
+        // 1/(1-percentage);
+        left = left-element;
+        console.log("left is :" ,left);
+        price.push(1/(1-(element/100)));
+    });
+}
+
+
+main = async () => {
+    await initBuying();
+    await evalutePrice();
+    console.log("Price: ",price);
+var ctx = document.getElementById('chart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [ "January", "February", "March", "April", "May", "June",
+"July", "August", "September", "October", "November", "December" ],
+        datasets: [{
+            label: 'Number of Coins Bought LINE A',
+            max: 100,
+            min: 0,
+            data: bought,
+            backgroundColor: [
+                'rgba(252, 3, 3, 0.2)',
+            ],
+            borderColor: [
+                'rgba(252, 3, 3, 1)',
+            ],
+            borderWidth: 1
+        },
+        {
+            label: 'Price',
+            max: 100,
+            min: 0,
+            data: price,
+            backgroundColor: [
+                'rgba(71, 191, 44, 0.2)',
+            ],
+            borderColor: [
+                'rgba(45, 74, 38, 1)',
+            ],
+            borderWidth: 1,
+            yAxisID: 'y-axis-price',
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            },
+            {
+                ticks: {
+                    beginAtZero: true,
+                    
+                },
+                position: 'right',
+                id: 'y-axis-price',
+            }],
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                }
+            }]
+        }
+    }
+});
+}
+main();
+document.getElementById("check").innerHTML += `<div>Total Bought: ${bought.reduce((a, b) => a + b, 0)}</div>`
+</script>
+
+</html>
